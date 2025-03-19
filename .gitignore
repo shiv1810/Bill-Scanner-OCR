@@ -1,0 +1,10 @@
+# Ignore environment files
+
+# Ignore unnecessary OS & IDE files
+__pycache__/
+.DS_Store
+.vscode/
+node_modules/
+.DS_Store
+.DS_Store
+.env

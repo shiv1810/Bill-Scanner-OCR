@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice OCR - Self</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Invoice OCR - Self</h1>
+
+      <!-- STEP 1: Document Options & File Upload -->
+      <div id="step1" class="step">
+        <!-- Options Card -->
+        <div class="options-card">
+          <h2>Document Options</h2>
+          <p>Select the document type and style below:</p>
+
+          <div class="options-form">
+            <div class="form-group">
+              <label for="docTypeSelect">Document Type:</label>
+              <select id="docTypeSelect">
+                <option value="invoice">Invoice</option>
+                <option value="receipt">Receipt</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="docStyleSelect">Document Style:</label>
+              <select id="docStyleSelect">
+                <option value="digital">Digital</option>
+                <option value="handwritten">Handwritten</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload Card -->
+        <div class="upload-box">
+          <svg
+            class="upload-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          <h2>Upload Document</h2>
+          <p>
+            Drag and drop your file below (or <strong>browse</strong>) to
+            extract data.
+          </p>
+
+          <div class="file-input-container" id="dropArea">
+            <label for="fileInput" class="file-label">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 16L12 8"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M9 11L12 8 15 11"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M8 16H12H16"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span>Drag & drop or <span>browse</span></span>
+            </label>
+            <input
+              type="file"
+              id="fileInput"
+              accept="image/*,application/pdf"
+            />
+          </div>
+
+          <div id="filePreview" class="file-preview hidden">
+            <div class="selected-file">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M13 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V9M13 2L20 9M13 2V9H20"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span id="fileName">No file selected</span>
+              <button id="removeFile" class="remove-file">×</button>
+            </div>
+
+            <!-- PDF Preview -->
+            <iframe id="pdfPreview" class="hidden"></iframe>
+            <!-- Image Preview -->
+            <img id="imagePreview" class="hidden" alt="Document Preview" />
+          </div>
+
+          <button id="extractBtn" class="btn-primary" disabled>
+            Extract Details
+          </button>
+
+          <div class="loading-indicator hidden">
+            <div class="spinner"></div>
+            <p>Processing document...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Document Details -->
+      <div id="step2" class="step hidden">
+        <button class="back-btn" onclick="goBack()">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19 12H5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M12 19L5 12L12 5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Back
+        </button>
+
+        <div class="card">
+          <!-- Left Pane: Document Preview -->
+          <div class="card-left">
+            <div class="image-container">
+              <img id="invoiceImg" src="" alt="Document Preview" />
+            </div>
+          </div>
+
+          <!-- Right Pane: Document Form -->
+          <div class="card-right">
+            <h2>Document Details</h2>
+            <p class="subtitle">Verify and update the extracted information</p>
+
+            <form id="invoiceForm">
+              <div class="form-group">
+                <label for="invoiceNumberInput">Invoice Number:</label>
+                <input
+                  type="text"
+                  id="invoiceNumberInput"
+                  placeholder="e.g. INV-1001"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="invoiceDateInput">Invoice Date:</label>
+                <div class="input-with-icon">
+                  <input
+                    type="text"
+                    id="invoiceDateInput"
+                    placeholder="YYYY-MM-DD"
+                  />
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 2V6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M16 2V6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M3 10H21"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <rect
+                      x="3"
+                      y="4"
+                      width="18"
+                      height="18"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="invoiceAmountInput">Amount:</label>
+                <div class="input-with-icon">
+                  <input
+                    type="text"
+                    id="invoiceAmountInput"
+                    placeholder="e.g. 2100.00"
+                  />
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M15 8H10.5C9.67157 8 9 8.67157 9 9.5C9 10.3284 9.67157 11 10.5 11H13.5C14.3284 11 15 11.6716 15 12.5C15 13.3284 14.3284 14 13.5 14H9"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M12 14V16M12 6V8"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="gstNumberInput">GST Number:</label>
+                <input type="text" id="gstNumberInput" placeholder="GST No." />
+              </div>
+
+              <div class="form-group">
+                <label for="gstPercentageInput">GST Percentage:</label>
+                <input
+                  type="text"
+                  id="gstPercentageInput"
+                  placeholder="GST %"
+                />
+              </div>
+
+              <h3>Itemized Breakdown</h3>
+              <table id="itemsTable">
+                <thead>
+                  <tr>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="itemsBody">
+                  <!-- Items will be dynamically inserted here -->
+                </tbody>
+              </table>
+
+              <button type="button" onclick="addNewRow()">Add Item</button>
+
+              <button type="button" id="confirmBtn" class="btn-primary">
+                Confirm & Save
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Modal -->
+      <div id="successModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="success-icon">
+            <svg
+              width="64"
+              height="64"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M22 11.0857V12.0057C21.9988 14.1621 21.3005 16.2604 20.0093 17.9875C18.7182 19.7147 16.9033 20.9782 14.8354 21.5896C12.7674 22.201 10.5573 22.1276 8.53447 21.3803C6.51168 20.633 4.78465 19.2518 3.61096 17.4428C2.43727 15.6338 1.87979 13.4938 2.02168 11.342C2.16356 9.19029 2.99721 7.14205 4.39828 5.5028C5.79935 3.86354 7.69279 2.72111 9.79619 2.24587C11.8996 1.77063 14.1003 1.98806 16.07 2.86572"
+                stroke="#22c55e"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M22 4L12 14.01L9 11.01"
+                stroke="#22c55e"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <h3>Success!</h3>
+          <p>Document data has been saved successfully.</p>
+          <button id="closeModalBtn" class="btn-primary">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Your Existing JS File -->
+    <script src="script.js"></script>
+  </body>
+</html>
