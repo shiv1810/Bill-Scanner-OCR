@@ -1,6 +1,9 @@
-# Invoice OCR Processor
+# Bill and Invoice OCR Processor
 
 A Flask-based web application for extracting data from invoices using Optical Character Recognition (OCR). This system processes both PDF and image files, applies various preprocessing techniques to improve OCR accuracy, and extracts key invoice information such as invoice numbers, dates, and amounts.
+It has been made by keeping the Invoices and Bills in mind but its not limited to them, the OCR recognises pretty much all the text available on the image and the RegEx (Regular Expression) extracts all the relevant text from the given file or Image.
+
+Many debug images will be generated during testing to help you to better grasp what's happening underneath and help you further fine tune the model. Feel free to update the model and the RegEx to suite your needs as this is just limited to a use case and can be further improved by modofying the RegEx. It is a Basic Image to Text Model that you can tweak as per your own needs.
 
 ## Features
 
